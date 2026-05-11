@@ -1,0 +1,33 @@
+{% extends "admin/auth_base.html" %}
+{% block title %}Setup Admin — TwibbonKu{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <div class="auth-logo">🎨</div>
+  <h1 class="auth-title">Setup Awal Admin</h1>
+  <p class="auth-sub">Buat akun admin pertama untuk TwibbonKu</p>
+
+  <form method="POST" action="{{ url_for('admin.setup') }}" class="auth-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+    <div class="form-group">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" id="username" name="username" class="form-input"
+             placeholder="Pilih username" required autofocus />
+    </div>
+
+    <div class="form-group">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" id="email" name="email" class="form-input"
+             placeholder="email@contoh.com" required />
+    </div>
+
+    <div class="form-group">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" id="password" name="password" class="form-input"
+             placeholder="Minimal 8 karakter" required minlength="8" />
+    </div>
+
+    <button type="submit" class="btn btn-primary w-full">Buat Akun Admin →</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}TwibbonKu — Galeri Frame Twibbon{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="container hero-content">
+    <div class="hero-badge">✨ Platform Twibbon Gratis</div>
+    <h1 class="hero-title">Buat Twibbon <span class="gradient-text">Impianmu</span><br>dalam Hitungan Detik</h1>
+    <p class="hero-subtitle">Pilih frame, unggah foto, dan unduh hasil twibbon berkualitas tinggi — tanpa perlu keahlian desain grafis.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">{{ frames|length }}</span>
+        <span class="stat-label">Frame Tersedia</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num">1000px</span>
+        <span class="stat-label">Resolusi Output</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num">Gratis</span>
+        <span class="stat-label">Selamanya</span>
+      </div>
+    </div>
+    <a href="#gallery" class="btn btn-primary btn-lg hero-cta">
+      Jelajahi Frame →
+    </a>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-tag">Cara Kerja</p>
+      <h2 class="section-title">Mudah dalam 3 Langkah</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-icon">🖼️</div>
+        <div class="step-num">01</div>
+        <h3>Pilih Frame</h3>
+        <p>Jelajahi galeri frame twibbon kami dan pilih yang sesuai denganmu.</p>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-card">
+        <div class="step-icon">📸</div>
+        <div class="step-num">02</div>
+        <h3>Unggah Foto</h3>
+        <p>Upload foto profilmu (JPG, PNG, atau WEBP — maks 5 MB).</p>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-card">
+        <div class="step-icon">⬇️</div>
+        <div class="step-num">03</div>
+        <h3>Unduh & Bagikan</h3>
+        <p>Unduh hasil twibbon HD dan bagikan ke media sosialmu!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery Section -->
+<section class="gallery-section" id="gallery">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-tag">Koleksi Frame</p>
+      <h2 class="section-title">Galeri Twibbon</h2>
+    </div>
+
+    <!-- Filter & Search -->
+    <div class="gallery-controls">
+      <form action="{{ url_for('main.index') }}" method="get" class="search-form">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" name="q" id="search-input" value="{{ search_query }}"
+                 placeholder="Cari frame twibbon..." class="search-input" />
+        </div>
+        {% if active_category %}
+          <input type="hidden" name="category" value="{{ active_category }}" />
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Cari</button>
+      </form>
+
+      <div class="category-pills">
+        <a href="{{ url_for('main.index', q=search_query) }}"
+           class="pill {% if not active_category %}pill-active{% endif %}">Semua</a>
+        {% for cat in categories %}
+          <a href="{{ url_for('main.index', category=cat.slug, q=search_query) }}"
+             class="pill {% if active_category == cat.slug %}pill-active{% endif %}">
+            {{ cat.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Frame Grid -->
+    {% if frames %}
+      <div class="frame-grid">
+        {% for frame in frames %}
+          <article class="frame-card" id="frame-{{ frame.id }}">
+            <a href="{{ url_for('main.frame_editor', frame_id=frame.id) }}" class="frame-card-link">
+              <div class="frame-card-img-wrap">
+                <img src="{{ frame.frame_url }}" alt="Frame {{ frame.name }}" class="frame-card-img" loading="lazy" />
+                <div class="frame-card-overlay">
+                  <span class="overlay-btn">Gunakan Frame Ini →</span>
+                </div>
+              </div>
+              <div class="frame-card-body">
+                <h3 class="frame-card-title">{{ frame.name }}</h3>
+                {% if frame.description %}
+                  <p class="frame-card-desc">{{ frame.description|truncate(80) }}</p>
+                {% endif %}
+                <div class="frame-card-footer">
+                  {% if frame.category %}
+                    <span class="pill pill-sm">{{ frame.category.name }}</span>
+                  {% endif %}
+                  <span class="download-badge">⬇ {{ frame.download_count }}</span>
+                </div>
+              </div>
+            </a>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">🖼️</div>
+        <h3>Belum Ada Frame</h3>
+        {% if search_query or active_category %}
+          <p>Tidak ada frame yang cocok dengan pencarianmu. Coba kata kunci lain.</p>
+          <a href="{{ url_for('main.index') }}" class="btn btn-primary">Reset Filter</a>
+        {% else %}
+          <p>Admin belum menambahkan frame twibbon. Cek lagi nanti!</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

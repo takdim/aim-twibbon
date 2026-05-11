@@ -1,0 +1,60 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Kategori — Admin TwibbonKu{% endblock %}
+{% block page_title %}Manajemen Kategori{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid" style="grid-template-columns: 1fr 2fr">
+  <!-- Add Category -->
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2 class="admin-card-title">➕ Tambah Kategori</h2>
+    </div>
+    <div class="admin-card-body">
+      <form method="POST" action="{{ url_for('admin.add_category') }}" class="admin-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="form-group">
+          <label for="name" class="form-label">Nama Kategori</label>
+          <input type="text" id="name" name="name" class="form-input"
+                 placeholder="Contoh: Kampus" required />
+        </div>
+        <button type="submit" class="btn btn-primary w-full">Tambah</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Category List -->
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2 class="admin-card-title">🏷️ Semua Kategori ({{ categories|length }})</h2>
+    </div>
+    <div class="admin-card-body">
+      {% if categories %}
+        <table class="admin-table">
+          <thead>
+            <tr><th>Nama</th><th>Slug</th><th>Jumlah Frame</th><th>Aksi</th></tr>
+          </thead>
+          <tbody>
+            {% for cat in categories %}
+              <tr>
+                <td><strong>{{ cat.name }}</strong></td>
+                <td><code>{{ cat.slug }}</code></td>
+                <td>{{ cat.frames.count() }}</td>
+                <td>
+                  <form method="POST" action="{{ url_for('admin.delete_category', cat_id=cat.id) }}"
+                        onsubmit="return confirm('Hapus kategori \'{{ cat.name }}\'? Frame dalam kategori ini tidak akan dihapus.')"
+                        style="display:inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-text">Belum ada kategori. Tambahkan di sebelah kiri.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

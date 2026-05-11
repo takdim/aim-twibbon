@@ -1,0 +1,111 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard — Admin TwibbonKu{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="stats-grid">
+  <div class="stat-card stat-card-blue">
+    <div class="stat-card-icon">🖼️</div>
+    <div class="stat-card-body">
+      <p class="stat-card-label">Total Frame</p>
+      <p class="stat-card-value">{{ total_frames }}</p>
+    </div>
+  </div>
+  <div class="stat-card stat-card-green">
+    <div class="stat-card-icon">✅</div>
+    <div class="stat-card-body">
+      <p class="stat-card-label">Frame Aktif</p>
+      <p class="stat-card-value">{{ active_frames }}</p>
+    </div>
+  </div>
+  <div class="stat-card stat-card-purple">
+    <div class="stat-card-icon">⬇️</div>
+    <div class="stat-card-body">
+      <p class="stat-card-label">Total Unduhan</p>
+      <p class="stat-card-value">{{ total_downloads }}</p>
+    </div>
+  </div>
+  <div class="stat-card stat-card-orange">
+    <div class="stat-card-icon">🏷️</div>
+    <div class="stat-card-body">
+      <p class="stat-card-label">Kategori</p>
+      <p class="stat-card-value">{{ total_categories }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+  <!-- Top Frames -->
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2 class="admin-card-title">🏆 Frame Terpopuler</h2>
+    </div>
+    <div class="admin-card-body">
+      {% if top_frames %}
+        <table class="admin-table">
+          <thead>
+            <tr><th>#</th><th>Frame</th><th>Kategori</th><th>Unduhan</th></tr>
+          </thead>
+          <tbody>
+            {% for frame in top_frames %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                  <div class="table-frame-name">
+                    <img src="{{ frame.frame_url }}" alt="{{ frame.name }}" class="table-thumb" />
+                    {{ frame.name }}
+                  </div>
+                </td>
+                <td>{{ frame.category.name if frame.category else '—' }}</td>
+                <td><span class="badge badge-blue">{{ frame.download_count }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-text">Belum ada frame.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Recent Frames -->
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2 class="admin-card-title">🆕 Frame Terbaru</h2>
+      <a href="{{ url_for('admin.add_frame') }}" class="btn btn-primary btn-sm">+ Tambah</a>
+    </div>
+    <div class="admin-card-body">
+      {% if recent_frames %}
+        <table class="admin-table">
+          <thead>
+            <tr><th>Frame</th><th>Status</th><th>Dibuat</th></tr>
+          </thead>
+          <tbody>
+            {% for frame in recent_frames %}
+              <tr>
+                <td>
+                  <div class="table-frame-name">
+                    <img src="{{ frame.frame_url }}" alt="{{ frame.name }}" class="table-thumb" />
+                    {{ frame.name }}
+                  </div>
+                </td>
+                <td>
+                  {% if frame.is_active %}
+                    <span class="badge badge-green">Aktif</span>
+                  {% else %}
+                    <span class="badge badge-gray">Nonaktif</span>
+                  {% endif %}
+                </td>
+                <td class="text-muted">{{ frame.created_at.strftime('%d %b %Y') }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-text">Belum ada frame.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

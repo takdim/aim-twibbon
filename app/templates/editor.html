@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Editor — {{ frame.name }} | TwibbonKu{% endblock %}
+{% block meta_description %}Buat twibbon dengan frame {{ frame.name }}. Upload foto dan unduh hasilnya sekarang!{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}" />
+{% endblock %}
+
+{% block content %}
+<section class="editor-section">
+  <div class="container editor-container">
+
+    <!-- Header -->
+    <div class="editor-header">
+      <a href="{{ url_for('main.index') }}" class="back-btn">← Kembali ke Galeri</a>
+      <div class="editor-title-group">
+        <h1 class="editor-title">{{ frame.name }}</h1>
+        {% if frame.category %}
+          <span class="pill">{{ frame.category.name }}</span>
+        {% endif %}
+      </div>
+      {% if frame.description %}
+        <p class="editor-desc">{{ frame.description }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Editor Layout -->
+    <div class="editor-layout">
+
+      <!-- Left: Steps Panel -->
+      <aside class="steps-panel">
+        <!-- Step 1 -->
+        <div class="step-panel" id="step-1-panel">
+          <div class="step-panel-header">
+            <div class="step-badge active" id="badge-1">1</div>
+            <div>
+              <h2 class="step-panel-title">Upload Foto</h2>
+              <p class="step-panel-sub">Format: JPG, PNG, WEBP (maks 5 MB)</p>
+            </div>
+          </div>
+
+          <div class="upload-area" id="upload-area">
+            <input type="file" id="photo-input" accept=".jpg,.jpeg,.png,.webp" hidden />
+            <div class="upload-placeholder" id="upload-placeholder">
+              <div class="upload-icon">📁</div>
+              <p class="upload-hint">Klik atau seret foto ke sini</p>
+              <span class="upload-formats">JPG · PNG · WEBP · maks 5 MB</span>
+            </div>
+            <img id="upload-preview" class="upload-preview hidden" alt="Pratinjau foto" />
+          </div>
+
+          <button class="btn btn-secondary w-full" id="change-photo-btn" style="display:none">
+            🔄 Ganti Foto
+          </button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-panel step-panel-locked" id="step-2-panel">
+          <div class="step-panel-header">
+            <div class="step-badge" id="badge-2">2</div>
+            <div>
+              <h2 class="step-panel-title">Buat Twibbon</h2>
+              <p class="step-panel-sub">Proses overlay foto dengan frame</p>
+            </div>
+          </div>
+          <button class="btn btn-primary w-full" id="generate-btn" disabled>
+            <span id="generate-label">✨ Buat Twibbon</span>
+            <span id="generate-loader" class="btn-loader hidden"></span>
+          </button>
+          <p class="step-note" id="generate-note">Upload foto terlebih dahulu.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-panel step-panel-locked" id="step-3-panel">
+          <div class="step-panel-header">
+            <div class="step-badge" id="badge-3">3</div>
+            <div>
+              <h2 class="step-panel-title">Unduh & Bagikan</h2>
+              <p class="step-panel-sub">Resolusi 1000×1000 px, siap untuk sosmed</p>
+            </div>
+          </div>
+          <div class="download-actions" id="download-actions" style="display:none">
+            <a id="download-btn" href="#" class="btn btn-success w-full" download>
+              ⬇ Unduh Twibbon (PNG)
+            </a>
+            <button class="btn btn-outline w-full" id="share-wa-btn" style="display:none">
+              📱 Bagikan ke WhatsApp
+            </button>
+            <button class="btn btn-ghost w-full" id="make-another-btn">
+              🔄 Buat Twibbon Lagi
+            </button>
+          </div>
+          <p class="step-note" id="step3-note">Buat twibbon terlebih dahulu.</p>
+        </div>
+      </aside>
+
+      <!-- Right: Preview Canvas -->
+      <div class="preview-panel">
+        <div class="canvas-container">
+          <div class="canvas-wrap" id="canvas-wrap">
+            <!-- Frame overlay always on top -->
+            <img src="{{ frame.frame_url }}" alt="Frame {{ frame.name }}" class="canvas-frame" id="canvas-frame" />
+            <!-- User photo below -->
+            <div class="photo-viewport">
+              <img id="canvas-photo" class="canvas-photo hidden" alt="Foto pengguna" />
+            </div>
+            <!-- Result overlay (after generation) -->
+            <img id="canvas-result" class="canvas-result hidden" alt="Hasil Twibbon" />
+
+            <!-- Empty state -->
+            <div class="canvas-empty" id="canvas-empty">
+              <div class="canvas-empty-icon">👤</div>
+              <p>Upload foto untuk melihat pratinjau</p>
+            </div>
+          </div>
+          
+          <!-- Zoom Controls (Hidden until photo uploaded) -->
+          <div id="editor-controls" class="editor-controls hidden">
+            <div class="control-group">
+              <label>🔍 Zoom</label>
+              <input type="range" id="zoom-slider" min="0.5" max="3" step="0.01" value="1" />
+            </div>
+            <p class="control-hint">💡 Klik dan geser foto untuk mengatur posisi</p>
+          </div>
+        </div>
+
+        <p class="preview-label">Pratinjau Twibbon</p>
+        <div class="frame-stats">
+          <span>📥 {{ frame.download_count }} kali diunduh</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Hidden data for JS -->
+<script>
+  window.TWIBBON_DATA = {
+    frameId: {{ frame.id }},
+    frameName: "{{ frame.name | e }}",
+    uploadUrl: "{{ url_for('main.upload_photo') }}",
+    generateUrl: "{{ url_for('main.generate') }}",
+    csrfToken: "{{ csrf_token() }}"
+  };
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

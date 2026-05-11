@@ -1,0 +1,54 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Kelola Frame — Admin TwibbonKu{% endblock %}
+{% block page_title %}Kelola Frame{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+  <div class="admin-card-header">
+    <h2 class="admin-card-title">🖼️ Semua Frame ({{ frames|length }})</h2>
+    <a href="{{ url_for('admin.add_frame') }}" class="btn btn-primary">+ Tambah Frame</a>
+  </div>
+  <div class="admin-card-body">
+    {% if frames %}
+      <div class="frames-admin-grid">
+        {% for frame in frames %}
+          <div class="frame-admin-card" id="admin-frame-{{ frame.id }}">
+            <div class="frame-admin-img-wrap">
+              <img src="{{ frame.frame_url }}" alt="{{ frame.name }}" class="frame-admin-img" />
+              <div class="frame-admin-status-badge">
+                {% if frame.is_active %}
+                  <span class="badge badge-green">Aktif</span>
+                {% else %}
+                  <span class="badge badge-gray">Nonaktif</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="frame-admin-body">
+              <h3 class="frame-admin-title">{{ frame.name }}</h3>
+              <p class="frame-admin-cat">{{ frame.category.name if frame.category else 'Tanpa Kategori' }}</p>
+              <p class="frame-admin-dl">⬇ {{ frame.download_count }} unduhan</p>
+              <div class="frame-admin-actions">
+                <a href="{{ url_for('admin.edit_frame', frame_id=frame.id) }}" class="btn btn-sm btn-outline">Edit</a>
+                <button class="btn btn-sm btn-secondary toggle-btn"
+                        data-frame-id="{{ frame.id }}"
+                        data-is-active="{{ frame.is_active|lower }}">
+                  {% if frame.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %}
+                </button>
+                <form method="POST" action="{{ url_for('admin.delete_frame', frame_id=frame.id) }}"
+                      onsubmit="return confirm('Hapus frame \'{{ frame.name }}\' secara permanen?')" style="display:inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state-admin">
+        <p>🖼️ Belum ada frame. <a href="{{ url_for('admin.add_frame') }}">Tambahkan sekarang</a>.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

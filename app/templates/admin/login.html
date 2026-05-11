@@ -1,0 +1,32 @@
+{% extends "admin/auth_base.html" %}
+{% block title %}Login Admin — TwibbonKu{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <div class="auth-logo">🎨</div>
+  <h1 class="auth-title">Admin TwibbonKu</h1>
+  <p class="auth-sub">Masuk ke panel admin</p>
+
+  <form method="POST" action="{{ url_for('admin.login') }}" class="auth-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+    <div class="form-group">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" id="username" name="username" class="form-input"
+             placeholder="Username admin" required autofocus />
+    </div>
+
+    <div class="form-group">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" id="password" name="password" class="form-input"
+             placeholder="Password" required />
+    </div>
+
+    <div class="form-check">
+      <input type="checkbox" id="remember" name="remember" />
+      <label for="remember">Ingat saya</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-full" id="login-btn">Masuk →</button>
+  </form>
+</div>
+{% endblock %}

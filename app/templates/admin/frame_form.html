@@ -1,0 +1,84 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{% if frame %}Edit Frame{% else %}Tambah Frame{% endif %} — Admin TwibbonKu{% endblock %}
+{% block page_title %}{% if frame %}Edit Frame{% else %}Tambah Frame Baru{% endif %}{% endblock %}
+
+{% block content %}
+<div class="admin-card" style="max-width:720px">
+  <div class="admin-card-header">
+    <h2 class="admin-card-title">{% if frame %}✏️ Edit: {{ frame.name }}{% else %}➕ Tambah Frame Baru{% endif %}</h2>
+    <a href="{{ url_for('admin.frames') }}" class="btn btn-outline btn-sm">← Kembali</a>
+  </div>
+  <div class="admin-card-body">
+    <form method="POST"
+          action="{% if frame %}{{ url_for('admin.edit_frame', frame_id=frame.id) }}{% else %}{{ url_for('admin.add_frame') }}{% endif %}"
+          enctype="multipart/form-data" class="admin-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+      <div class="form-group">
+        <label for="name" class="form-label">Nama Frame <span class="required">*</span></label>
+        <input type="text" id="name" name="name" class="form-input"
+               value="{{ frame.name if frame else '' }}" placeholder="Contoh: HUT RI ke-80" required />
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="form-label">Deskripsi</label>
+        <textarea id="description" name="description" class="form-input form-textarea"
+                  placeholder="Deskripsi singkat frame...">{{ frame.description if frame else '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="category_id" class="form-label">Kategori</label>
+        <select id="category_id" name="category_id" class="form-input form-select">
+          <option value="">— Tanpa Kategori —</option>
+          {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if frame and frame.category_id == cat.id %}selected{% endif %}>
+              {{ cat.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="frame_file" class="form-label">
+          File Frame PNG {% if not frame %}<span class="required">*</span>{% else %}(kosongkan jika tidak ingin mengganti){% endif %}
+        </label>
+        {% if frame %}
+          <div class="current-frame-preview">
+            <img src="{{ frame.frame_url }}" alt="{{ frame.name }}" />
+            <span>File saat ini: {{ frame.filename }}</span>
+          </div>
+        {% endif %}
+        <input type="file" id="frame_file" name="frame_file" class="form-input"
+               accept=".png" {% if not frame %}required{% endif %} />
+        <p class="form-hint">Hanya PNG dengan transparansi (alpha channel). Aspek rasio 1:1 disarankan.</p>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="active_from" class="form-label">Aktif Mulai</label>
+          <input type="datetime-local" id="active_from" name="active_from" class="form-input"
+                 value="{{ frame.active_from.strftime('%Y-%m-%dT%H:%M') if frame and frame.active_from else '' }}" />
+        </div>
+        <div class="form-group">
+          <label for="active_until" class="form-label">Aktif Sampai</label>
+          <input type="datetime-local" id="active_until" name="active_until" class="form-input"
+                 value="{{ frame.active_until.strftime('%Y-%m-%dT%H:%M') if frame and frame.active_until else '' }}" />
+        </div>
+      </div>
+
+      <div class="form-check">
+        <input type="checkbox" id="is_active" name="is_active"
+               {% if not frame or frame.is_active %}checked{% endif %} />
+        <label for="is_active">Frame Aktif (tampil di galeri publik)</label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {% if frame %}💾 Simpan Perubahan{% else %}➕ Tambah Frame{% endif %}
+        </button>
+        <a href="{{ url_for('admin.frames') }}" class="btn btn-ghost">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
